@@ -11,8 +11,11 @@ If the tile has no mines near by, it will reveal all near by tiles, and apear bl
 
 If a tile has a mine near by, it will have a number in it when revealed, the number will be equal to the number of mines surronding the tile.
 
-Tiles you suspect are mines can be flagged by Right-Clicking
+Tiles you suspect are mines can be flagged by Right-Clicking.
 
-If you are unlucky and reveal a mine, GAMEOVER. You can hit "R" to restart
+If you are unlucky and reveal a mine, GAMEOVER. You can hit "R" to restart.
 
+The number on the left indicates your score, the lower the better.
+
+The number on the right indicates the number of mines left.
 ![image](https://user-images.githubusercontent.com/66324385/134605855-cd324968-54fe-44c9-bbc8-90e0d4a8dd61.png)
