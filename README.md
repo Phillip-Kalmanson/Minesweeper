@@ -2,9 +2,11 @@
 Quick 1 day project to try out pygame library
 
 HOW TO INSTALL PYGAME
+
 pip install pygame
 
 HOW TO PLAY:
+
 Left-Click on a tile to start. This will reveal the clicked tile.
 
 If the tile has no mines near by, it will reveal all near by tiles, and apear blank when revealed.
