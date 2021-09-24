@@ -11,14 +11,14 @@ pygame.init()
 
 
 #Game Variables
-gridHeight = 10
-gridWidth = 10
-numMines = 10
-squareSize = 32
+gridHeight = 30 # Squares tall
+gridWidth = 30 # Squares wide
+numMines = 100 # Number of mines
+squareSize = 32 # Size of Squares
 header = 128
 border = 16
-gameWidth = squareSize * gridWidth + (border * 2)
-gameHeight = squareSize * gridHeight + border + header
+gameWidth = squareSize * gridWidth + (border * 2) # Dispaly Width
+gameHeight = squareSize * gridHeight + border + header # Display Height
 
 #Setup
 gameDisplay = pygame.display.set_mode((gameWidth, gameHeight))
@@ -54,7 +54,7 @@ image_square8 = pygame.image.load("images/square8.png")
 def drawText(txt, s, offset=0, color=BLACK):
     screen_text = pygame.font.SysFont("Calibri", s, True).render(txt, True, color)
     rect = screen_text.get_rect()
-    rect.center = (gridWidth * squareSize / 2 + border, gridHeight * squareSize / 2 + header + offset)
+    rect.center = (gridWidth * squareSize / 2 + border, 100 + offset)
     gameDisplay.blit(screen_text, rect)
 
 class Square:
@@ -68,11 +68,11 @@ class Square:
         self.rect = pygame.Rect(border + self.x * squareSize, header + self.y * squareSize, squareSize, squareSize)
         self.value = value
         
-    #Draw tiles
+    # Draw tiles
     def draw(self):
-        #If opened
+        # If opened
         if self.opened:
-            #If mine
+            # If mine
             if self.value == -1:
                 if self.mineOpened:
                     gameDisplay.blit(image_mineOpened, self.rect)
@@ -97,18 +97,18 @@ class Square:
                 gameDisplay.blit(image_square7, self.rect)
             elif self.value == 8:
                 gameDisplay.blit(image_square8, self.rect)
-        #If unopened
+        # If unopened
         else:
-            #Flag
+            # Flag
             if self.flagged:
                 gameDisplay.blit(image_flag, self.rect)
-            #Untouched
+            # Untouched
             else:
                 gameDisplay.blit(image_square, self.rect)
 
     def reveal(self):
         self.opened = True
-        #Auto reveal all mines if mine is revealed
+        # Auto reveal all mines if mine is revealed
         if self.value == -1:
             for m in mines:
                 if not grid[m[1]][m[0]].opened:
@@ -117,18 +117,18 @@ class Square:
         elif self.value == 0:
             for x in range(-1,2): #Check left and right
                 if self.x + x >= 0 and self.x + x < gridWidth:
-                    for y in range(-1,2): #Check above and below
+                    for y in range(-1,2): # Check above and below
                         if self.y + y >= 0 and self.y + y < gridHeight:
-                            if not grid[self.y + y][self.x + x].opened: #If not opened, open
+                            if not grid[self.y + y][self.x + x].opened: # If not opened, open
                                 grid[self.y + y][self.x + x].reveal()
 
     def update(self):
-        if self.value != -1: #Skip if bomb
-            for x in range(-1,2): #Check left and right
+        if self.value != -1: # Skip if bomb
+            for x in range(-1,2): # Check left and right
                 if self.x + x >= 0 and self.x + x < gridWidth:
-                    for y in range(-1,2): #Check above and below
+                    for y in range(-1,2): # Check above and below
                         if self.y + y >= 0 and self.y + y < gridHeight:
-                            if grid[self.y + y][self.x + x].value == -1: #If bomb found, increase by 1
+                            if grid[self.y + y][self.x + x].value == -1: # If bomb found, increase by 1
                                 self.value += 1
 def gameLoop():
     time = 0
@@ -139,14 +139,14 @@ def gameLoop():
     global mines
     mines = []
 
-    #Generate Mines
+    # Generate Mines
     for i in range(numMines):
         mine_location = [random.randrange(0, gridWidth), random.randrange(0, gridHeight)]
         while mine_location in mines:
             mine_location = [random.randrange(0, gridWidth), random.randrange(0, gridHeight)]
         mines.append(mine_location)
 
-    #Generate grid
+    # Generate grid
     for j in range(gridHeight):
         row = []
         for i in range(gridWidth):
@@ -156,11 +156,11 @@ def gameLoop():
                 row.append(Square(i,j, 0))
         grid.append(row)
 
-    #Update grid
+    # Update grid
     for i in grid:
         for j in i:
             j.update()
-    #Main loop
+    # Main loop
     while gameState != "Exit":
         gameDisplay.fill(LIGHT_GRAY)
         
@@ -180,21 +180,23 @@ def gameLoop():
                         gameState = "Exit"
                         gameLoop()
             else:
+                # Events
                 if event.type == pygame.MOUSEBUTTONUP:
                     for i in grid:
                         for j in i:
                             if j.rect.collidepoint(event.pos):
                                 # Left click on field
                                 if event.button == 1:
-                                    j.reveal()
                                     # Toggle flag off
                                     if j.flagged:
                                         minesLeft += 1
                                         j.flagged = False
-                                    # If it's a mine
-                                    if j.value == -1:
-                                        gameState = "Game Over"
-                                        j.mineOpened = True
+                                    else:
+                                        j.reveal()
+                                        # If it's a mine
+                                        if j.value == -1:
+                                            gameState = "Game Over"
+                                            j.mineOpened = True
                                 elif event.button == 3:
                                     # If the player right clicked
                                     if not j.opened:
@@ -202,12 +204,12 @@ def gameLoop():
                                         if j.flagged:
                                             j.flagged = False
                                             minesLeft += 1
-                                        #Toggle flag on
+                                        # Toggle flag on
                                         else:
                                             j.flagged = True
         
                                             minesLeft -= 1
-        #Check if won
+        # Check if won
         won = True
         for j in grid:
             for i in j:
@@ -218,28 +220,28 @@ def gameLoop():
         if won and gameState != "Exit":
             gameState = "Won"
 
-        #Draw text
+        # Draw text
         if gameState == "Play":
             time += 1
         elif gameState == "Won":
-            drawText("You WON!", 50, -210 , GREEN)
-            drawText("R to restart", 35, -175)
+            drawText("You WON!", 50, 0 , GREEN)
+            drawText("R to restart", 35, -50)
         elif gameState == "Game Over":
-            drawText("Game Over!", 50, -210 , RED)
-            drawText("R to restart", 35, -175)
+            drawText("Game Over!", 50, 0 , RED)
+            drawText("R to restart", 35, -50)
             for i in grid:
                 for j in i:
                     if j.flagged and j.value != -1:
                         j.mineWrong = True
 
-        #Draw mines left
+        # Draw mines left
         screen_text = pygame.font.SysFont("Calibri", 50).render(minesLeft.__str__(), True, DARK_GRAY)
-        gameDisplay.blit(screen_text, (gameWidth - border - 50, border))
+        gameDisplay.blit(screen_text, (gameWidth - border - 100, border))
 
-        #Draw Score
+        # Draw Score
         score = str(time // 15)
         screen_text = pygame.font.SysFont("Calibri", 50).render(score, True, DARK_GRAY)
-        gameDisplay.blit(screen_text, (border, border))
+        gameDisplay.blit(screen_text, (border + 50, border ))
 
         
         pygame.display.update()  # Update screen
